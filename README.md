@@ -1,4 +1,4 @@
-# 🧠 Student Intelligence Portal  
+# 🧠 NeuroLearn Student Intelligence Portal  
 ### AI-Powered Autonomous Learning & Research System
 
 > A research-heavy, engineering-focused AI platform that helps university students study smarter using adaptive learning, knowledge tracing, RAG-based assistants, AI code analysis, and productivity intelligence.
