@@ -2,7 +2,7 @@
 ### We will divide development into 5 phases:
 | Phase | Focus | Systems |
 | :--- | :--- | :--- |
-| **Phase 1** | Productivity foundation | tasks + planner + notes + pomodoro |
+| **Phase 1** | Productivity foundation | tasks + planner + notes + pomodoro + course manager + Authentication |
 | **Phase 2** | AI study assistant | RAG study assistant + document intelligence |
 | **Phase 3** | Adaptive learning | BKT, quizzes, mastery + Knowledge tracing |
 | **Phase 4** | Research + coding | paper assistant + code analyzer |
@@ -16,8 +16,19 @@ This phase creates the base system and database.
 * **Authentication**
     * Login / signup
     * JWT authentication
+* **User Settings & Profile**
+    * username
+    * study goal hours/day
+    * preferred pomodoro duration
+    * timezone
+* **Course / Subject Manager**
+    * create subject
+    * edit subject
+    * assign color
+    * optional exam date
+    * optional credit hours
 * **To-Do List**
-    * Tasks
+    * Tasks (linked to subjects)
     * priorities
     * deadlines
     * completion tracking
@@ -39,14 +50,19 @@ This phase creates the base system and database.
     * tags
     * subject linking
     * basic search
+* **Note Attachments (File Storage)**
+    * PDFs
+    * lecture slides
+    * screenshots
 * **Basic Analytics Dashboard**
     * study time graphs
     * tasks completed
     * focus sessions
+    * analytics per subject
 
 **🎯 Result of Phase 1**
-* NeuroLearn becomes a productivity platform for students.
-* This phase also generates logs needed for future ML models.
+* NeuroLearn becomes a structured productivity platform for students.
+* This phase generates the core behavioral logs, subject connections, and file foundations needed for future ML models and the RAG system.
 
 ---
 
