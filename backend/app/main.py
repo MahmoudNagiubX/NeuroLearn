@@ -1,6 +1,8 @@
 ﻿from fastapi import FastAPI
 
 from app.api.routes.auth import router as auth_router
+from app.api.routes.subjects import router as subjects_router
+from app.api.routes.tasks import router as tasks_router
 from app.api.routes.users import router as users_router
 from app.core.config.settings import settings
 
@@ -24,3 +26,5 @@ def health_check() -> dict[str, str]:
 
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(subjects_router)
+app.include_router(tasks_router)
