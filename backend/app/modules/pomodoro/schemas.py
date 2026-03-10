@@ -1,10 +1,7 @@
 from datetime import datetime
 from uuid import UUID
-
 from pydantic import BaseModel, ConfigDict, Field
-
 from app.modules.pomodoro.models import PomodoroSessionType, PomodoroStatus
-
 
 class PomodoroSessionCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
