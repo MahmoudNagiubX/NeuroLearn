@@ -1,6 +1,7 @@
 ﻿from fastapi import FastAPI
 
 from app.api.routes.auth import router as auth_router
+from app.api.routes.notes import router as notes_router
 from app.api.routes.pomodoro import router as pomodoro_router
 from app.api.routes.study_sessions import router as study_sessions_router
 from app.api.routes.subjects import router as subjects_router
@@ -32,3 +33,4 @@ app.include_router(subjects_router)
 app.include_router(tasks_router)
 app.include_router(study_sessions_router)
 app.include_router(pomodoro_router)
+app.include_router(notes_router)
