@@ -18,8 +18,7 @@ export function NavBar() {
   return (
     <header className="nav-shell">
       <div className="nav-left">
-        <h1>NeuroLearn</h1>
-        <p>Smoke Test UI</p>
+        <h1 style={{ fontFamily: "Outfit, system-ui, sans-serif", letterSpacing: "-0.5px" }}>NeuroLearn</h1>
       </div>
       <nav className="nav-links">
         {NAV_ITEMS.map((item) => (

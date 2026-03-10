@@ -105,91 +105,104 @@ export function PomodoroPage() {
 
   return (
     <div className="grid-two">
-      <section className="card">
-        <h2>Create Pomodoro Session</h2>
-        <form className="stack" onSubmit={handleCreate}>
-          <label>
-            Planned Minutes
-            <input
-              type="number"
-              min={1}
-              value={plannedMinutes}
-              onChange={(e) => setPlannedMinutes(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Session Type
-            <select value={sessionType} onChange={(e) => setSessionType(e.target.value)}>
-              <option value="focus">focus</option>
-              <option value="short_break">short_break</option>
-              <option value="long_break">long_break</option>
-            </select>
-          </label>
-          <label>
-            Status
-            <select value={statusValue} onChange={(e) => setStatusValue(e.target.value)}>
-              <option value="aborted">aborted</option>
-              <option value="completed">completed</option>
-            </select>
-          </label>
-          <label>
-            Subject
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
-              <option value="">No subject</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Task
-            <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
-              <option value="">No task</option>
-              {filteredTasks.map((task) => (
-                <option key={task.id} value={task.id}>
-                  {task.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Study Session
-            <select value={studySessionId} onChange={(e) => setStudySessionId(e.target.value)}>
-              <option value="">No study session</option>
-              {filteredStudySessions.map((studySession) => (
-                <option key={studySession.id} value={studySession.id}>
-                  {studySession.title || studySession.id}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">Create Pomodoro Session</button>
-        </form>
-        {error ? <p className="error">{error}</p> : null}
-      </section>
+      <div className="stack">
+        <section className="card">
+          <h2>Log Pomodoro Session</h2>
+          <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 1rem 0" }}>Record a focus or break session.</p>
+          <form className="stack" onSubmit={handleCreate}>
+            <div className="grid-two" style={{ gap: "0.5rem" }}>
+              <label>
+                Duration (min)
+                <input
+                  type="number"
+                  min={1}
+                  value={plannedMinutes}
+                  onChange={(e) => setPlannedMinutes(e.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Type
+                <select value={sessionType} onChange={(e) => setSessionType(e.target.value)}>
+                  <option value="focus">Focus</option>
+                  <option value="short_break">Short Break</option>
+                  <option value="long_break">Long Break</option>
+                </select>
+              </label>
+            </div>
+
+            <div style={{ padding: "0.5rem 0" }}>
+              <span style={{ display: "block", fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>Status</span>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <label style={{ flexDirection: "row", alignItems: "center", gap: "0.25rem", fontWeight: "normal" }}>
+                  <input type="radio" value="completed" checked={statusValue === "completed"} onChange={(e) => setStatusValue(e.target.value)} />
+                  Completed
+                </label>
+                <label style={{ flexDirection: "row", alignItems: "center", gap: "0.25rem", fontWeight: "normal" }}>
+                  <input type="radio" value="aborted" checked={statusValue === "aborted"} onChange={(e) => setStatusValue(e.target.value)} />
+                  Aborted
+                </label>
+              </div>
+            </div>
+
+            <label>
+              Subject
+              <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
+                <option value="">No subject</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.id}>
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Task
+              <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
+                <option value="">No task</option>
+                {filteredTasks.map((task) => (
+                  <option key={task.id} value={task.id}>
+                    {task.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Study Session
+              <select value={studySessionId} onChange={(e) => setStudySessionId(e.target.value)}>
+                <option value="">No study session</option>
+                {filteredStudySessions.map((studySession) => (
+                  <option key={studySession.id} value={studySession.id}>
+                    {studySession.title || `Session ${studySession.id.slice(0, 8)}`}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button type="submit">Log Session</button>
+          </form>
+          {error ? <p className="error">{error}</p> : null}
+        </section>
+      </div>
 
       <section className="card">
-        <h2>Pomodoro Sessions</h2>
+        <h2>Recent Sessions</h2>
         <ul className="list">
           {pomodoroSessions.map((pomodoroSession) => (
-            <li key={pomodoroSession.id}>
+            <li key={pomodoroSession.id} style={{ opacity: pomodoroSession.status === "aborted" ? 0.6 : 1 }}>
               <div>
-                <strong>{pomodoroSession.session_type}</strong>
-                <span>
-                  {pomodoroSession.status} | {pomodoroSession.planned_minutes} min
+                <strong style={{ textTransform: "capitalize" }}>{pomodoroSession.session_type.replace("_", " ")}</strong>
+                <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                  {pomodoroSession.planned_minutes} min • {pomodoroSession.status === "completed" ? "✅ Completed" : "❌ Aborted"}
                 </span>
               </div>
-              {pomodoroSession.status !== "completed" ? (
+              {pomodoroSession.status !== "completed" && pomodoroSession.status !== "aborted" ? (
                 <button type="button" onClick={() => handleComplete(pomodoroSession.id)}>
                   Complete
                 </button>
               ) : null}
             </li>
           ))}
-          {!pomodoroSessions.length ? <li>No pomodoro sessions yet.</li> : null}
+          {!pomodoroSessions.length ? <li style={{ justifyContent: "center", color: "#94a3b8" }}>No sessions yet. Time to focus!</li> : null}
         </ul>
       </section>
     </div>

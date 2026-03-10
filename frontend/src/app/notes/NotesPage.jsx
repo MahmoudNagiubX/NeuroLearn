@@ -165,138 +165,108 @@ export function NotesPage() {
   }
 
   return (
-    <div className="grid-three">
-      <section className="card">
-        <h2>Folders</h2>
-        <form className="stack" onSubmit={handleCreateFolder}>
-          <label>
-            Folder Name
-            <input value={folderName} onChange={(e) => setFolderName(e.target.value)} required />
-          </label>
-          <button type="submit">Create Folder</button>
-        </form>
-        <ul className="list">
-          {folders.map((folder) => (
-            <li key={folder.id}>{folder.name}</li>
-          ))}
-          {!folders.length ? <li>No folders yet.</li> : null}
-        </ul>
-      </section>
-
-      <section className="card">
-        <h2>Notes</h2>
-        <form className="stack" onSubmit={handleCreateNote}>
-          <label>
-            Title
-            <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} required />
-          </label>
-          <label>
-            Content (Markdown)
-            <textarea value={noteContent} onChange={(e) => setNoteContent(e.target.value)} rows={4} required />
-          </label>
-          <label>
-            Subject
-            <select value={noteSubjectId} onChange={(e) => setNoteSubjectId(e.target.value)}>
-              <option value="">No subject</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Folder
-            <select value={noteFolderId} onChange={(e) => setNoteFolderId(e.target.value)}>
-              <option value="">No folder</option>
-              {folders.map((folder) => (
-                <option key={folder.id} value={folder.id}>
-                  {folder.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">{editingNoteId ? "Update Note" : "Create Note"}</button>
-          {editingNoteId ? (
-            <button type="button" onClick={handleCancelEdit}>
-              Cancel Edit
-            </button>
-          ) : null}
-        </form>
-
-        <ul className="list">
-          {notes.map((note) => (
-            <li key={note.id}>
-              <div>
-                <strong>{note.title}</strong>
-                <span>{note.content_md.slice(0, 80)}</span>
-              </div>
-              <div className="row-actions">
-                <button type="button" onClick={() => handleEditNote(note)}>
-                  Edit
-                </button>
-                <button type="button" onClick={() => setSelectedNoteId(note.id)}>
-                  Attachments
-                </button>
-              </div>
-            </li>
-          ))}
-          {!notes.length ? <li>No notes yet.</li> : null}
-        </ul>
-      </section>
-
-      <section className="card">
-        <h2>Attachments Metadata</h2>
-        {selectedNoteId ? <p>Selected Note: {selectedNoteId}</p> : <p>Select a note first.</p>}
-        <form className="stack" onSubmit={handleCreateAttachment}>
-          <label>
-            Original Filename
+    <div className="grid-two">
+      <div className="stack">
+        <section className="card mb-4" style={{ padding: "0.5rem" }}>
+          <form className="stack" onSubmit={handleCreateNote}>
             <input
-              value={attachmentFilename}
-              onChange={(e) => setAttachmentFilename(e.target.value)}
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+              placeholder="Title"
+              style={{ fontWeight: "bold", border: "none", fontSize: "1.1rem", padding: "0.5rem 1rem" }}
               required
-              disabled={!selectedNoteId}
             />
-          </label>
-          <label>
-            Storage Key
-            <input
-              value={attachmentStorageKey}
-              onChange={(e) => setAttachmentStorageKey(e.target.value)}
+            <textarea
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              placeholder="Take a note..."
+              rows={4}
+              style={{ border: "none", resize: "none", padding: "0 1rem" }}
               required
-              disabled={!selectedNoteId}
             />
-          </label>
-          <label>
-            MIME Type
-            <input
-              value={attachmentMimeType}
-              onChange={(e) => setAttachmentMimeType(e.target.value)}
-              disabled={!selectedNoteId}
-            />
-          </label>
-          <button type="submit" disabled={!selectedNoteId}>
-            Add Attachment Metadata
-          </button>
-        </form>
+            <div className="grid-two" style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}>
+              <select value={noteSubjectId} onChange={(e) => setNoteSubjectId(e.target.value)} style={{ background: "#f8fafc", border: "none" }}>
+                <option value="">No subject</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.id}>{subject.name}</option>
+                ))}
+              </select>
+              <select value={noteFolderId} onChange={(e) => setNoteFolderId(e.target.value)} style={{ background: "#f8fafc", border: "none" }}>
+                <option value="">No folder</option>
+                {folders.map((folder) => (
+                  <option key={folder.id} value={folder.id}>{folder.name}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end", padding: "0.5rem 1rem" }}>
+              {editingNoteId ? (
+                <button type="button" className="secondary" onClick={handleCancelEdit}>Cancel</button>
+              ) : null}
+              <button type="submit">{editingNoteId ? "Save Note" : "Done"}</button>
+            </div>
+          </form>
+        </section>
 
-        <ul className="list">
-          {attachments.map((attachment) => (
-            <li key={attachment.id}>
-              <div>
-                <strong>{attachment.original_filename}</strong>
-                <span>{attachment.storage_key}</span>
+        <section className="card">
+          <h3 style={{ marginTop: 0 }}>Folders</h3>
+          <form style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }} onSubmit={handleCreateFolder}>
+            <input style={{ flex: 1 }} value={folderName} onChange={(e) => setFolderName(e.target.value)} placeholder="New folder..." required />
+            <button type="submit" className="secondary">Add</button>
+          </form>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {folders.map((folder) => (
+              <span key={folder.id} style={{ background: "#f1f5f9", padding: "0.4rem 0.8rem", borderRadius: "999px", fontSize: "0.85rem", color: "#475569", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                📁 {folder.name}
+              </span>
+            ))}
+            {!folders.length ? <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No folders yet.</span> : null}
+          </div>
+        </section>
+      </div>
+
+      <div className="stack">
+        <section style={{ background: "transparent", border: "none", padding: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1rem" }}>
+            {notes.map((note) => (
+              <div key={note.id} className="card" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", padding: "1.25rem" }}>
+                <strong style={{ fontSize: "1.1rem" }}>{note.title}</strong>
+                <p style={{ margin: 0, color: "#475569", fontSize: "0.95rem", whiteSpace: "pre-wrap" }}>
+                  {note.content_md}
+                </p>
+                <div style={{ marginTop: "auto", paddingTop: "1rem", display: "flex", gap: "0.5rem" }}>
+                  <button type="button" className="secondary" style={{ flex: 1, padding: "0.35rem" }} onClick={() => handleEditNote(note)}>Edit</button>
+                  <button type="button" className="secondary" style={{ flex: 1, padding: "0.35rem" }} onClick={() => setSelectedNoteId(note.id)}>Attach</button>
+                </div>
               </div>
-              <button type="button" onClick={() => handleDeleteAttachment(attachment.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-          {selectedNoteId && !attachments.length ? <li>No attachments yet.</li> : null}
-        </ul>
+            ))}
+            {!notes.length ? <p style={{ color: "#94a3b8" }}>No notes yet. Create one on the left!</p> : null}
+          </div>
+        </section>
 
-        {error ? <p className="error">{error}</p> : null}
-      </section>
+        {selectedNoteId && (
+          <section className="card" style={{ marginTop: "1rem", background: "#f8fafc", borderColor: "#cbd5e1" }}>
+            <h3 style={{ marginTop: 0 }}>Attachments Metadata</h3>
+            <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 1rem 0" }}>Manage file links for the selected note.</p>
+            <form className="stack" onSubmit={handleCreateAttachment}>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                <input style={{ flex: 1, minWidth: "120px" }} value={attachmentFilename} onChange={(e) => setAttachmentFilename(e.target.value)} placeholder="File name" required />
+                <input style={{ flex: 1, minWidth: "120px" }} value={attachmentStorageKey} onChange={(e) => setAttachmentStorageKey(e.target.value)} placeholder="Mock URL / Key" required />
+                <button type="submit" className="secondary">Add</button>
+              </div>
+            </form>
+            <ul className="list" style={{ marginTop: "1rem" }}>
+              {attachments.map((attachment) => (
+                <li key={attachment.id} style={{ padding: "0.5rem 0.75rem", border: "none", background: "#fff" }}>
+                  <span style={{ fontSize: "0.9rem", color: "#334155" }}>📎 {attachment.original_filename}</span>
+                  <button type="button" className="secondary" style={{ padding: "0.2rem 0.5rem", fontSize: "0.8rem", background: "transparent", border: "none", color: "#ef4444" }} onClick={() => handleDeleteAttachment(attachment.id)}>Remove</button>
+                </li>
+              ))}
+              {!attachments.length ? <li style={{ color: "#94a3b8", fontSize: "0.85rem", justifyContent: "center", border: "none", background: "transparent" }}>No attachments found.</li> : null}
+            </ul>
+          </section>
+        )}
+      </div>
+      {error && <div style={{ position: "fixed", bottom: "1rem", right: "1rem", background: "#fee2e2", color: "#b91c1c", padding: "1rem", borderRadius: "0.5rem", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)", zIndex: 50 }}>{error}</div>}
     </div>
   );
 }

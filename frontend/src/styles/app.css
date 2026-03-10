@@ -129,20 +129,54 @@ input,
 select,
 textarea,
 button {
-  border: 1px solid #c2ccdb;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 button {
   background: #0f172a;
   color: #fff;
   cursor: pointer;
+  border-color: #0f172a;
+  font-weight: 500;
+}
+
+button:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #1e293b;
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
+}
+
+button.secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 .auth-shell {
@@ -167,13 +201,19 @@ button:disabled {
 }
 
 .list li {
-  border: 1px solid #d7deea;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.55rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.list li:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .list li div {

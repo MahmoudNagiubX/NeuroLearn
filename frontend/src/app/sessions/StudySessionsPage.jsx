@@ -101,98 +101,105 @@ export function StudySessionsPage() {
 
   return (
     <div className="grid-two">
-      <section className="card">
-        <h2>Create Study Session</h2>
-        <form className="stack" onSubmit={handleCreate}>
-          <label>
-            Title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} />
-          </label>
-          <label>
-            Subject
-            <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
-              <option value="">No subject</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Task
-            <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
-              <option value="">No task</option>
-              {filteredTasks.map((task) => (
-                <option key={task.id} value={task.id}>
-                  {task.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Scheduled Start
-            <input
-              type="datetime-local"
-              value={scheduledStart}
-              onChange={(e) => {
-                setScheduledStart(e.target.value);
-                if (scheduledEnd <= e.target.value) {
-                  setScheduledEnd(defaultEnd(e.target.value));
-                }
-              }}
-              required
-            />
-          </label>
-          <label>
-            Scheduled End
-            <input
-              type="datetime-local"
-              value={scheduledEnd}
-              onChange={(e) => setScheduledEnd(e.target.value)}
-              required
-            />
-          </label>
-          <button type="submit">Create Session</button>
-        </form>
-        {error ? <p className="error">{error}</p> : null}
-      </section>
+      <div className="stack">
+        <section className="card">
+          <h2>Schedule Study Session</h2>
+          <form className="stack" onSubmit={handleCreate}>
+            <label>
+              Title
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Midterm Prep" />
+            </label>
+            <div className="grid-two" style={{ gap: "0.5rem" }}>
+              <label>
+                Subject
+                <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
+                  <option value="">No subject</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>
+                      {subject.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Task
+                <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
+                  <option value="">No task</option>
+                  {filteredTasks.map((task) => (
+                    <option key={task.id} value={task.id}>
+                      {task.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid-two" style={{ gap: "0.5rem" }}>
+              <label>
+                Start Time
+                <input
+                  type="datetime-local"
+                  value={scheduledStart}
+                  onChange={(e) => {
+                    setScheduledStart(e.target.value);
+                    if (scheduledEnd <= e.target.value) {
+                      setScheduledEnd(defaultEnd(e.target.value));
+                    }
+                  }}
+                  required
+                />
+              </label>
+              <label>
+                End Time
+                <input
+                  type="datetime-local"
+                  value={scheduledEnd}
+                  onChange={(e) => setScheduledEnd(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
+            <button type="submit">Schedule Session</button>
+          </form>
+          {error ? <p className="error">{error}</p> : null}
+        </section>
+      </div>
 
       <section className="card">
-        <h2>Study Sessions</h2>
+        <h2>Your Sessions</h2>
         <ul className="list">
           {studySessions.map((studySession) => (
-            <li key={studySession.id}>
+            <li key={studySession.id} style={{ opacity: studySession.status === "cancelled" ? 0.6 : 1 }}>
               <div>
                 <strong>{studySession.title || "Untitled Session"}</strong>
-                <span>Status: {studySession.status}</span>
+                <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                  {new Date(studySession.scheduled_start).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                  {" — "}
+                  {studySession.status === "scheduled" ? "📅 Scheduled" :
+                    studySession.status === "in_progress" ? "⏳ In Progress" :
+                      studySession.status === "completed" ? "✅ Completed" : "❌ Cancelled"}
+                </span>
               </div>
               <div className="row-actions">
-                <button
-                  type="button"
-                  onClick={() => handleAction("start", studySession.id)}
-                  disabled={studySession.status !== "scheduled"}
-                >
-                  Start
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAction("complete", studySession.id)}
-                  disabled={!["scheduled", "in_progress"].includes(studySession.status)}
-                >
-                  Complete
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAction("cancel", studySession.id)}
-                  disabled={!["scheduled", "in_progress"].includes(studySession.status)}
-                >
-                  Cancel
-                </button>
+                {studySession.status === "scheduled" && (
+                  <button type="button" className="secondary" onClick={() => handleAction("start", studySession.id)}>
+                    Start
+                  </button>
+                )}
+                {["scheduled", "in_progress"].includes(studySession.status) && (
+                  <button type="button" onClick={() => handleAction("complete", studySession.id)}>
+                    ✓ Done
+                  </button>
+                )}
+                {["scheduled", "in_progress"].includes(studySession.status) && (
+                  <button type="button" className="secondary" style={{ color: "#ef4444" }} onClick={() => handleAction("cancel", studySession.id)}>
+                    Cancel
+                  </button>
+                )}
               </div>
             </li>
           ))}
-          {!studySessions.length ? <li>No study sessions yet.</li> : null}
+          {!studySessions.length ? <li style={{ justifyContent: "center", color: "#94a3b8" }}>No study sessions planned.</li> : null}
         </ul>
       </section>
     </div>

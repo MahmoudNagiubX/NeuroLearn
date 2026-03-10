@@ -7,6 +7,8 @@ from app.api.routes.study_sessions import router as study_sessions_router
 from app.api.routes.subjects import router as subjects_router
 from app.api.routes.tasks import router as tasks_router
 from app.api.routes.users import router as users_router
+from app.api.routes.events import router as events_router
+from app.api.routes.analytics import router as analytics_router
 from app.core.config.settings import settings
 
 
@@ -46,3 +48,5 @@ app.include_router(tasks_router)
 app.include_router(study_sessions_router)
 app.include_router(pomodoro_router)
 app.include_router(notes_router)
+app.include_router(events_router, prefix="/events", tags=["events"])
+app.include_router(analytics_router, prefix="/analytics", tags=["analytics"])

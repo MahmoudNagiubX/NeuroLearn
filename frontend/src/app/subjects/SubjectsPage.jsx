@@ -43,32 +43,36 @@ export function SubjectsPage() {
 
   return (
     <div className="grid-two">
-      <section className="card">
-        <h2>Create Subject</h2>
-        <form onSubmit={handleCreate} className="stack">
-          <label>
-            Name
-            <input value={name} onChange={(e) => setName(e.target.value)} required />
-          </label>
-          <label>
-            Description
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
-          </label>
-          <button type="submit">Create Subject</button>
-        </form>
-        {error ? <p className="error">{error}</p> : null}
-      </section>
+      <div className="stack">
+        <section className="card">
+          <h2>Create Subject</h2>
+          <form className="stack" onSubmit={handleCreate}>
+            <label>
+              Name
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Mathematics" required />
+            </label>
+            <label>
+              Description
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional details..." rows={2} />
+            </label>
+            <button type="submit">Create Subject</button>
+          </form>
+          {error ? <p className="error">{error}</p> : null}
+        </section>
+      </div>
 
       <section className="card">
-        <h2>Subjects</h2>
+        <h2>Your Subjects</h2>
         <ul className="list">
           {subjects.map((subject) => (
             <li key={subject.id}>
-              <strong>{subject.name}</strong>
-              <span>{subject.description || "No description"}</span>
+              <div>
+                <strong style={{ fontSize: "1.05rem" }}>{subject.name}</strong>
+                <span style={{ fontSize: "0.9rem", color: "#64748b" }}>{subject.description || "No description"}</span>
+              </div>
             </li>
           ))}
-          {!subjects.length ? <li>No subjects yet.</li> : null}
+          {!subjects.length ? <li style={{ justifyContent: "center", color: "#94a3b8" }}>No subjects yet.</li> : null}
         </ul>
       </section>
     </div>
