@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.modules.notes.models import Note, NoteAttachment, NoteFolder
 from app.modules.notes.schemas import NoteAttachmentCreate, NoteCreate, NoteFolderUpdate, NoteUpdate
 from app.modules.subjects.models import Subject
+from app.modules.events.service import service as event_service
 
 
 class CrossEntityValidationError(ValueError):
@@ -93,6 +94,9 @@ def create_note(db: Session, *, user_id: UUID, payload: NoteCreate) -> Note:
     db.add(note)
     db.commit()
     db.refresh(note)
+    
+    event_service.track_note_created(db=db, user_id=user_id, note_id=note.id)
+    
     return note
 
 

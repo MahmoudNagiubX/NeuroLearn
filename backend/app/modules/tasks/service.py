@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select
@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.modules.subjects.models import Subject
 from app.modules.tasks.models import Tag, Task, TaskList, TaskStatus
 from app.modules.tasks.schemas import TaskCreate, TaskUpdate
+from app.modules.events.service import service as event_service
 
 
 class DuplicateNameError(ValueError):
@@ -164,6 +165,9 @@ def create_task(db: Session, *, user_id: UUID, payload: TaskCreate) -> Task:
     db.add(task)
     db.commit()
     db.refresh(task)
+    
+    event_service.track_task_created(db=db, user_id=user_id, task_id=task.id)
+    
     result = get_task(db, user_id=user_id, task_id=task.id)
     return result if result is not None else task
 
@@ -239,4 +243,7 @@ def complete_task(db: Session, *, user_id: UUID, task_id: UUID) -> Task | None:
     db.add(task)
     db.commit()
     db.refresh(task)
+    
+    event_service.track_task_completed(db=db, user_id=user_id, task_id=task.id)
+    
     return get_task(db, user_id=user_id, task_id=task.id)

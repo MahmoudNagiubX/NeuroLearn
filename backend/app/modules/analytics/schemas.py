@@ -23,3 +23,14 @@ class StudyTimeMetrics(BaseModel):
 class ProductivityMetrics(BaseModel):
     tasks_completed_this_week: int
     pomodoro_sessions_today: int
+
+
+class DashboardSummary(BaseModel):
+    total_study_minutes: int
+    weekly_study_minutes: int
+    completed_tasks: int
+    task_completion_rate: float
+    pomodoro_sessions: int
+    notes_created: int
+    subjects_studied: int
+

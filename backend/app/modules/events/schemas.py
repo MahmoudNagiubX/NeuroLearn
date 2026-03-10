@@ -5,18 +5,27 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class AppEventBase(BaseModel):
+class EventBase(BaseModel):
+    user_id: UUID
     event_type: str = Field(..., max_length=255)
-    meta: dict[str, Any] | None = None
+    entity_type: str | None = None
+    entity_id: UUID | None = None
+    subject_id: UUID | None = None
+    task_id: UUID | None = None
+    study_session_id: UUID | None = None
+    pomodoro_session_id: UUID | None = None
+    note_id: UUID | None = None
+    metadata: dict[str, Any] | None = None
 
 
-class AppEventCreate(AppEventBase):
+class EventCreate(EventBase):
     pass
 
 
-class AppEventResponse(AppEventBase):
+class EventResponse(EventBase):
     id: UUID
-    user_id: UUID
     occurred_at: datetime
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+

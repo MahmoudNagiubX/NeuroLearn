@@ -9,6 +9,7 @@ from app.modules.pomodoro.schemas import PomodoroCompleteRequest, PomodoroSessio
 from app.modules.study_sessions.models import StudySession
 from app.modules.subjects.models import Subject
 from app.modules.tasks.models import Task
+from app.modules.events.service import service as event_service
 
 
 class CrossEntityValidationError(ValueError):
@@ -103,6 +104,9 @@ def create_pomodoro_session(db: Session, *, user_id: UUID, payload: PomodoroSess
     db.add(pomodoro_session)
     db.commit()
     db.refresh(pomodoro_session)
+    
+    event_service.track_pomodoro_started(db=db, user_id=user_id, pomodoro_session_id=pomodoro_session.id)
+    
     return pomodoro_session
 
 
@@ -218,4 +222,7 @@ def complete_pomodoro_session(
     db.add(pomodoro_session)
     db.commit()
     db.refresh(pomodoro_session)
+    
+    event_service.track_pomodoro_completed(db=db, user_id=user_id, pomodoro_session_id=pomodoro_session.id)
+    
     return pomodoro_session

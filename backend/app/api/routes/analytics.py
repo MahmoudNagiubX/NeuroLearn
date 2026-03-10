@@ -10,7 +10,7 @@ from app.modules.analytics import schemas, service
 
 router = APIRouter()
 
-@router.get("/dashboard", response_model=schemas.DashboardMetrics)
+@router.get("/dashboard", response_model=schemas.DashboardSummary)
 def read_dashboard(
     db: Session = Depends(get_db),
     current_user_id: uuid.UUID = Depends(get_current_user),
@@ -18,7 +18,7 @@ def read_dashboard(
     """
     Get all dashboard metrics for current user.
     """
-    return service.get_dashboard_metrics(db=db, user_id=current_user_id)
+    return service.get_dashboard_summary(db=db, user_id=current_user_id)
 
 
 @router.get("/study-time", response_model=schemas.StudyTimeMetrics)

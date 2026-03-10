@@ -8,6 +8,7 @@ from app.modules.study_sessions.models import StudySession, StudySessionStatus
 from app.modules.study_sessions.schemas import StudySessionCompleteRequest, StudySessionCreate, StudySessionUpdate
 from app.modules.subjects.models import Subject
 from app.modules.tasks.models import Task
+from app.modules.events.service import service as event_service
 
 
 class CrossEntityValidationError(ValueError):
@@ -142,6 +143,9 @@ def start_study_session(db: Session, *, user_id: UUID, study_session_id: UUID) -
     db.add(study_session)
     db.commit()
     db.refresh(study_session)
+    
+    event_service.track_study_session_started(db=db, user_id=user_id, study_session_id=study_session.id)
+    
     return study_session
 
 
@@ -186,6 +190,9 @@ def complete_study_session(
     db.add(study_session)
     db.commit()
     db.refresh(study_session)
+    
+    event_service.track_study_session_completed(db=db, user_id=user_id, study_session_id=study_session.id)
+    
     return study_session
 
 

@@ -144,3 +144,34 @@ def get_productivity_metrics(db: Session, user_id: UUID) -> schemas.Productivity
         tasks_completed_this_week=dashboard.tasks_completed_this_week,
         pomodoro_sessions_today=dashboard.pomodoro_sessions_today,
     )
+
+
+class AnalyticsService:
+    def get_dashboard_summary(self, db: Session, user_id: UUID) -> schemas.DashboardSummary:
+        from app.modules.analytics.repository import repository as analytics_repo
+        
+        total_study_minutes = analytics_repo.get_total_study_minutes(db, user_id)
+        weekly_study_minutes = analytics_repo.get_weekly_study_minutes(db, user_id)
+        
+        completed_tasks = analytics_repo.get_completed_tasks(db, user_id)
+        total_tasks = analytics_repo.get_total_tasks(db, user_id)
+        
+        task_completion_rate = 0.0
+        if total_tasks > 0:
+            task_completion_rate = round((completed_tasks / total_tasks) * 100, 2)
+            
+        pomodoro_sessions = analytics_repo.get_pomodoro_sessions(db, user_id)
+        notes_created = analytics_repo.get_notes_created(db, user_id)
+        subjects_studied = analytics_repo.get_subjects_studied(db, user_id)
+        
+        return schemas.DashboardSummary(
+            total_study_minutes=total_study_minutes,
+            weekly_study_minutes=weekly_study_minutes,
+            completed_tasks=completed_tasks,
+            task_completion_rate=task_completion_rate,
+            pomodoro_sessions=pomodoro_sessions,
+            notes_created=notes_created,
+            subjects_studied=subjects_studied
+        )
+
+service = AnalyticsService()

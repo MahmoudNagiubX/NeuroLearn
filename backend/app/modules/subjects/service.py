@@ -1,4 +1,4 @@
-﻿from uuid import UUID
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.subjects.models import Subject
 from app.modules.subjects.schemas import SubjectUpdate
+from app.modules.events.service import service as event_service
 
 
 class DuplicateSubjectNameError(ValueError):
@@ -39,6 +40,9 @@ def create_subject(
         db.rollback()
         raise DuplicateSubjectNameError("Subject name already exists.") from exc
     db.refresh(subject)
+    
+    event_service.track_subject_created(db=db, user_id=user_id, subject_id=subject.id)
+    
     return subject
 
 
