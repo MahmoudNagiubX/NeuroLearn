@@ -12,6 +12,10 @@ export function completeTask(token, taskId) {
   return apiRequest(`/tasks/${taskId}/complete`, { method: "POST", token });
 }
 
+export function updateTask(token, taskId, payload) {
+  return apiRequest(`/tasks/${taskId}`, { method: "PATCH", token, body: payload });
+}
+
 export function listTaskLists(token) {
   return apiRequest("/task-lists", { token });
 }

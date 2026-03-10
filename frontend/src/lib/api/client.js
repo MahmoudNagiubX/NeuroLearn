@@ -30,7 +30,20 @@ export async function apiRequest(path, { method = "GET", token, body, query } = 
   const payload = isJson ? await response.json() : null;
 
   if (!response.ok) {
-    const message = payload?.detail || `Request failed with status ${response.status}`;
+    const detail = payload?.detail;
+    let message = `Request failed with status ${response.status}`;
+
+    if (typeof detail === "string") {
+      message = detail;
+    } else if (Array.isArray(detail)) {
+      message = detail
+        .map((issue) => issue?.msg || "Validation error")
+        .filter(Boolean)
+        .join("; ");
+    } else if (detail && typeof detail === "object") {
+      message = detail.message || JSON.stringify(detail);
+    }
+
     throw new Error(message);
   }
 

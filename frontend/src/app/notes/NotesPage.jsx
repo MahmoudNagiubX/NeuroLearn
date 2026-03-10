@@ -8,6 +8,7 @@ import {
   listNoteAttachments,
   listNoteFolders,
   listNotes,
+  updateNote,
 } from "../../features/notes/api";
 import { listSubjects } from "../../features/subjects/api";
 import { useAuth } from "../../hooks/useAuth";
@@ -21,6 +22,7 @@ export function NotesPage() {
   const [attachments, setAttachments] = useState([]);
 
   const [selectedNoteId, setSelectedNoteId] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState("");
   const [error, setError] = useState("");
 
   const [folderName, setFolderName] = useState("");
@@ -55,7 +57,7 @@ export function NotesPage() {
   }
 
   async function loadAttachments(noteId) {
-    if (!noteId) {
+    if (!noteId || !token) {
       setAttachments([]);
       return;
     }
@@ -73,7 +75,7 @@ export function NotesPage() {
 
   useEffect(() => {
     loadAttachments(selectedNoteId);
-  }, [selectedNoteId]);
+  }, [selectedNoteId, token]);
 
   async function handleCreateFolder(event) {
     event.preventDefault();
@@ -91,20 +93,45 @@ export function NotesPage() {
     event.preventDefault();
     setError("");
     try {
-      await createNote(token, {
+      const payload = {
         title: noteTitle,
         content_md: noteContent,
         subject_id: noteSubjectId || null,
         folder_id: noteFolderId || null,
-      });
+      };
+
+      if (editingNoteId) {
+        await updateNote(token, editingNoteId, payload);
+      } else {
+        await createNote(token, payload);
+      }
+
       setNoteTitle("");
       setNoteContent("");
       setNoteSubjectId("");
       setNoteFolderId("");
+      setEditingNoteId("");
       await loadBaseData();
     } catch (err) {
       setError(err.message);
     }
+  }
+
+  function handleEditNote(note) {
+    setEditingNoteId(note.id);
+    setNoteTitle(note.title);
+    setNoteContent(note.content_md);
+    setNoteSubjectId(note.subject_id || "");
+    setNoteFolderId(note.folder_id || "");
+    setError("");
+  }
+
+  function handleCancelEdit() {
+    setEditingNoteId("");
+    setNoteTitle("");
+    setNoteContent("");
+    setNoteSubjectId("");
+    setNoteFolderId("");
   }
 
   async function handleCreateAttachment(event) {
@@ -189,7 +216,12 @@ export function NotesPage() {
               ))}
             </select>
           </label>
-          <button type="submit">Create Note</button>
+          <button type="submit">{editingNoteId ? "Update Note" : "Create Note"}</button>
+          {editingNoteId ? (
+            <button type="button" onClick={handleCancelEdit}>
+              Cancel Edit
+            </button>
+          ) : null}
         </form>
 
         <ul className="list">
@@ -199,9 +231,14 @@ export function NotesPage() {
                 <strong>{note.title}</strong>
                 <span>{note.content_md.slice(0, 80)}</span>
               </div>
-              <button type="button" onClick={() => setSelectedNoteId(note.id)}>
-                Attachments
-              </button>
+              <div className="row-actions">
+                <button type="button" onClick={() => handleEditNote(note)}>
+                  Edit
+                </button>
+                <button type="button" onClick={() => setSelectedNoteId(note.id)}>
+                  Attachments
+                </button>
+              </div>
             </li>
           ))}
           {!notes.length ? <li>No notes yet.</li> : null}

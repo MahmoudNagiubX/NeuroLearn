@@ -36,6 +36,10 @@ export function StudySessionsPage() {
   const [subjects, setSubjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState("");
+  const filteredTasks = useMemo(
+    () => (subjectId ? tasks.filter((task) => task.subject_id === subjectId) : tasks),
+    [subjectId, tasks],
+  );
 
   async function loadData() {
     if (!token) return;
@@ -57,6 +61,12 @@ export function StudySessionsPage() {
     loadData();
   }, [token]);
 
+  useEffect(() => {
+    if (taskId && !filteredTasks.some((task) => task.id === taskId)) {
+      setTaskId("");
+    }
+  }, [filteredTasks, taskId]);
+
   async function handleCreate(event) {
     event.preventDefault();
     setError("");
@@ -68,6 +78,9 @@ export function StudySessionsPage() {
         scheduled_start: toIso(scheduledStart),
         scheduled_end: toIso(scheduledEnd),
       });
+      setTitle("");
+      setSubjectId("");
+      setTaskId("");
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -110,7 +123,7 @@ export function StudySessionsPage() {
             Task
             <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
               <option value="">No task</option>
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <option key={task.id} value={task.id}>
                   {task.title}
                 </option>
@@ -155,13 +168,25 @@ export function StudySessionsPage() {
                 <span>Status: {studySession.status}</span>
               </div>
               <div className="row-actions">
-                <button type="button" onClick={() => handleAction("start", studySession.id)}>
+                <button
+                  type="button"
+                  onClick={() => handleAction("start", studySession.id)}
+                  disabled={studySession.status !== "scheduled"}
+                >
                   Start
                 </button>
-                <button type="button" onClick={() => handleAction("complete", studySession.id)}>
+                <button
+                  type="button"
+                  onClick={() => handleAction("complete", studySession.id)}
+                  disabled={!["scheduled", "in_progress"].includes(studySession.status)}
+                >
                   Complete
                 </button>
-                <button type="button" onClick={() => handleAction("cancel", studySession.id)}>
+                <button
+                  type="button"
+                  onClick={() => handleAction("cancel", studySession.id)}
+                  disabled={!["scheduled", "in_progress"].includes(studySession.status)}
+                >
                   Cancel
                 </button>
               </div>

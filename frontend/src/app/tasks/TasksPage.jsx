@@ -1,7 +1,14 @@
 ﻿import { useEffect, useState } from "react";
 
 import { listSubjects } from "../../features/subjects/api";
-import { completeTask, createTask, createTaskList, listTaskLists, listTasks } from "../../features/tasks/api";
+import {
+  completeTask,
+  createTask,
+  createTaskList,
+  listTaskLists,
+  listTasks,
+  updateTask,
+} from "../../features/tasks/api";
 import { useAuth } from "../../hooks/useAuth";
 
 export function TasksPage() {
@@ -81,6 +88,16 @@ export function TasksPage() {
     }
   }
 
+  async function handleStartTask(taskId) {
+    setError("");
+    try {
+      await updateTask(token, taskId, { status: "in_progress" });
+      await loadPageData();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
     <div className="grid-two">
       <section className="card">
@@ -140,11 +157,18 @@ export function TasksPage() {
                 <strong>{task.title}</strong>
                 <span>Status: {task.status}</span>
               </div>
-              {task.status !== "done" ? (
-                <button type="button" onClick={() => handleCompleteTask(task.id)}>
-                  Mark Complete
-                </button>
-              ) : null}
+              <div className="row-actions">
+                {task.status === "todo" ? (
+                  <button type="button" onClick={() => handleStartTask(task.id)}>
+                    Start
+                  </button>
+                ) : null}
+                {task.status !== "done" ? (
+                  <button type="button" onClick={() => handleCompleteTask(task.id)}>
+                    Mark Complete
+                  </button>
+                ) : null}
+              </div>
             </li>
           ))}
           {!tasks.length ? <li>No tasks yet.</li> : null}

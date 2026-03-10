@@ -16,6 +16,10 @@ export function createNote(token, payload) {
   return apiRequest("/notes", { method: "POST", token, body: payload });
 }
 
+export function updateNote(token, noteId, payload) {
+  return apiRequest(`/notes/${noteId}`, { method: "PATCH", token, body: payload });
+}
+
 export function listNoteAttachments(token, noteId) {
   return apiRequest(`/notes/${noteId}/attachments`, { token });
 }

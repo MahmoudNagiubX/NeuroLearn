@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 
 import { completePomodoroSession, createPomodoroSession, listPomodoroSessions } from "../../features/pomodoro/api";
 import { listStudySessions } from "../../features/study-sessions/api";
@@ -21,6 +21,23 @@ export function PomodoroPage() {
   const [taskId, setTaskId] = useState("");
   const [studySessionId, setStudySessionId] = useState("");
   const [statusValue, setStatusValue] = useState("aborted");
+  const filteredTasks = useMemo(
+    () => (subjectId ? tasks.filter((task) => task.subject_id === subjectId) : tasks),
+    [subjectId, tasks],
+  );
+  const filteredStudySessions = useMemo(
+    () =>
+      studySessions.filter((studySession) => {
+        if (subjectId && studySession.subject_id && studySession.subject_id !== subjectId) {
+          return false;
+        }
+        if (taskId && studySession.task_id && studySession.task_id !== taskId) {
+          return false;
+        }
+        return true;
+      }),
+    [studySessions, subjectId, taskId],
+  );
 
   async function loadData() {
     if (!token) return;
@@ -44,6 +61,18 @@ export function PomodoroPage() {
     loadData();
   }, [token]);
 
+  useEffect(() => {
+    if (taskId && !filteredTasks.some((task) => task.id === taskId)) {
+      setTaskId("");
+    }
+  }, [filteredTasks, taskId]);
+
+  useEffect(() => {
+    if (studySessionId && !filteredStudySessions.some((studySession) => studySession.id === studySessionId)) {
+      setStudySessionId("");
+    }
+  }, [filteredStudySessions, studySessionId]);
+
   async function handleCreate(event) {
     event.preventDefault();
     setError("");
@@ -56,6 +85,8 @@ export function PomodoroPage() {
         study_session_id: studySessionId || null,
         status: statusValue,
       });
+      setTaskId("");
+      setStudySessionId("");
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -117,7 +148,7 @@ export function PomodoroPage() {
             Task
             <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
               <option value="">No task</option>
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <option key={task.id} value={task.id}>
                   {task.title}
                 </option>
@@ -128,7 +159,7 @@ export function PomodoroPage() {
             Study Session
             <select value={studySessionId} onChange={(e) => setStudySessionId(e.target.value)}>
               <option value="">No study session</option>
-              {studySessions.map((studySession) => (
+              {filteredStudySessions.map((studySession) => (
                 <option key={studySession.id} value={studySession.id}>
                   {studySession.title || studySession.id}
                 </option>
