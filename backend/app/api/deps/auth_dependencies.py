@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -34,3 +35,9 @@ def get_current_user(
     if user is None:
         raise _credentials_exception()
     return user
+
+
+def get_current_user_id(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> UUID:
+    return current_user.id

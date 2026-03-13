@@ -15,7 +15,7 @@ class EventBase(BaseModel):
     study_session_id: UUID | None = None
     pomodoro_session_id: UUID | None = None
     note_id: UUID | None = None
-    metadata: dict[str, Any] | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class EventCreate(EventBase):
@@ -26,6 +26,7 @@ class EventResponse(EventBase):
     id: UUID
     occurred_at: datetime
     created_at: datetime
+    metadata: dict[str, Any] = Field(default_factory=dict, alias="event_metadata")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 

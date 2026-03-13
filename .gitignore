@@ -1,0 +1,11 @@
+﻿# Environment
+backend/.env
+backend/.env.local
+
+# Python
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# JavaScript
+frontend/node_modules/
